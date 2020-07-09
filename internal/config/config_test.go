@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -19,6 +18,5 @@ func TestNew(t *testing.T) {
 	pkgConfig.Init("truffls", "")
 	c := New()
 
-	fmt.Println(c.Debug)
 	assert.True(t, c.Debug)
 }

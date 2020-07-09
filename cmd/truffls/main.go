@@ -6,8 +6,13 @@ you may not use this file except in compliance with the License.
 
 package main
 
-import 	"fmt"
+import (
+	"fmt"
+
+	"github.com/foodarchive/truffls/internal/config"
+)
 
 func main() {
-	fmt.Println("starting...")
+	fmt.Println(config.Version)
+	fmt.Println(config.BuildDate)
 }
