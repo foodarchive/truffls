@@ -15,7 +15,7 @@ func TestNew(t *testing.T) {
 		_ = os.Unsetenv("TRUFFLS_DEBUG")
 	}()
 
-	pkgConfig.Init("truffls", "")
+	pkgConfig.Load("truffls", "")
 	c := New()
 
 	assert.True(t, c.Debug)

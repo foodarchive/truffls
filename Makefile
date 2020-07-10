@@ -26,8 +26,8 @@ GO_LDFLAGS := -X github.com/foodarchive/$(APP_NAME)/internal/config.BuildDate=$(
 .PHONY: default
 default: help
 
-build: $(BUILD_FILES) ## build the application
-	@go build -trimpath -ldflags "$(GO_LDFLAGS)" -o ./bin/$(APP_NAME) ./main.go
+bin/$(APP_NAME): $(BUILD_FILES) ## build the application
+	@go build -trimpath -ldflags "$(GO_LDFLAGS)" -o "$@" ./cmd/$(APP_NAME)
 
 test:
 	go test ./...

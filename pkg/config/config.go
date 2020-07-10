@@ -10,7 +10,7 @@ import (
 
 type Flag = pflag.Flag
 
-func Init(namespace, filename string) {
+func Load(namespace, filename string) {
 	if namespace == "" {
 		log.Fatal("config namespace must be provided")
 	}
