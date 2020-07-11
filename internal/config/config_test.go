@@ -1,7 +1,6 @@
 package config_test
 
 import (
-	"os"
 	"testing"
 
 	. "github.com/foodarchive/truffls/internal/config"
@@ -10,12 +9,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	_ = os.Setenv("TRUFFLS_DEBUG", "true")
-	defer func() {
-		_ = os.Unsetenv("TRUFFLS_DEBUG")
-	}()
-
-	pkgConfig.Load("truffls", "")
+	pkgConfig.Load("truffls", "./testdata/config_test.yaml")
 	c := New()
 
 	assert.True(t, c.Debug)
