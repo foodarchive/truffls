@@ -1,8 +1,6 @@
 package config
 
 import (
-	"log"
-
 	pkgConfig "github.com/foodarchive/truffls/pkg/config"
 )
 
@@ -18,10 +16,8 @@ type Config struct {
 	Debug bool
 }
 
-func New() Config {
+func New() (Config, error) {
 	var c Config
-	if err := pkgConfig.Unmarshal(&c); err != nil {
-		log.Fatal(err)
-	}
-	return c
+	err := pkgConfig.Unmarshal(&c)
+	return c, err
 }

@@ -35,7 +35,6 @@ func Load(namespace, filename string) {
 func Unmarshal(v interface{}) error {
 	return viper.Unmarshal(v, func(c *mapstructure.DecoderConfig) {
 		c.TagName = "config"
-		c.ZeroFields = false
 		c.DecodeHook = mapstructure.ComposeDecodeHookFunc(
 			mapstructure.StringToTimeDurationHookFunc(),
 			mapstructure.StringToSliceHookFunc(","),
