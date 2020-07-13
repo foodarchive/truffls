@@ -50,16 +50,14 @@ http_server:
 )
 
 func Example() {
-	abspath, err := filepath.EvalSymlinks(".")
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "fail to evaluate symbolic links"))
-	}
-
-	configPath := fmt.Sprintf("%s/config_sample.yml", filepath.Dir(abspath))
-
+	configPath := fmt.Sprintf("%s/config_sample.yml", filepath.Dir("."))
 	if err := ioutil.WriteFile(configPath, configBytes, 0644); err != nil {
 		log.Fatal(errors.Wrap(err, "fail to write config file"))
 	}
+
+	defer func() {
+		_ = os.Remove(configPath)
+	}()
 
 	_ = pflag.String("env", "development", "setup app env")
 	pflag.Parse()
