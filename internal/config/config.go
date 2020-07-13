@@ -12,15 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package config
 
 import (
-	"fmt"
-
-	"github.com/foodarchive/truffls/internal/config"
+	pkgConfig "github.com/foodarchive/truffls/pkg/config"
 )
 
-func main() {
-	fmt.Println(config.Version)
-	fmt.Println(config.BuildDate)
+var (
+	// Version is dynamically set by the toolchain or overridden by the Makefile.
+	Version = "DEV"
+
+	// BuildDate is dynamically set at build time in the Makefile.
+	BuildDate = "" // YYYY-MM-DD
+)
+
+type Config struct {
+	Debug bool
+}
+
+func New() (Config, error) {
+	var c Config
+	err := pkgConfig.Unmarshal(&c)
+	return c, err
 }

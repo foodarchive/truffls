@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package config_test
 
 import (
-	"fmt"
+	"testing"
 
-	"github.com/foodarchive/truffls/internal/config"
+	. "github.com/foodarchive/truffls/internal/config"
+	pkgConfig "github.com/foodarchive/truffls/pkg/config"
+	"github.com/stretchr/testify/assert"
 )
 
-func main() {
-	fmt.Println(config.Version)
-	fmt.Println(config.BuildDate)
+func TestNew(t *testing.T) {
+	pkgConfig.Load("truffls", "./testdata/config_test.yaml")
+	c, err := New()
+
+	assert.NoError(t, err)
+	assert.True(t, c.Debug)
 }
