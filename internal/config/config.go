@@ -26,10 +26,12 @@ var (
 	BuildDate = "" // YYYY-MM-DD
 )
 
+// Config struct store application configuration
 type Config struct {
 	Debug bool
 }
 
+// Create a new application configuration
 func New() (Config, error) {
 	var c Config
 	err := pkgConfig.Unmarshal(&c)
