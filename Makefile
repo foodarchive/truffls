@@ -37,6 +37,28 @@ test-with-coverage: ## run testing with code coverage
 lint: $(TOOLS_DIR)/golangci-lint ## lint the source code using golangci
 	$(TOOLS_DIR)/golangci-lint run --fix && $(TOOLS_DIR)/golangci-lint run
 
+.PHONY: ci
+ci: lint check-clean-work-tree test-with-coverage license-check ## list of task that going to be executed on ci
+
+.PHONY: check-clean-work-tree
+check-clean-work-tree: ## check whether the working branch is clean or not
+	@if ! git diff --quiet; then \
+	  echo; \
+	  echo 'Working tree is not clean, did you forget to run "make precommit"?'; \
+	  echo; \
+	  git status; \
+	  exit 1; \
+	fi
+
+.PHONY: license-check
+license-check:
+	@licRes=$$(for f in $(GO_FILES) ; do \
+	           awk '/Copyright The Truffls Contributors.|generated|GENERATED/ && NR<=3 { found=1; next } END { if (!found) print FILENAME }' $$f; \
+	   done); \
+	   if [ -n "$${licRes}" ]; then \
+	           echo "license header checking failed:"; echo "$${licRes}"; \
+	           exit 1; \
+	   fi
 .PHONY: help
 help: ## help information about make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
