@@ -6,7 +6,9 @@
 *.test
 *.out
 *_sample.yml
+coverage.*
+bin/
 vendor/
 .idea/
 .vscode/
-bin/
+.tools/
