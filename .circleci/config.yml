@@ -1,7 +1,7 @@
 version: 2.1
+
 executors:
-  current-go:
-    resource_class: large
+  go_1_14_img:
     docker:
       - image: cimg/go:1.14
 
@@ -21,7 +21,7 @@ build-template: &build-template
         name: "Linter and Test Coverage Report"
         command: |
           make ci
-          mv coverage.html $TEST_RESULTS/
+          mv coverage.* $TEST_RESULTS/
 
     - save_cache:
         key: cimg-go-pkg-mod-{{ checksum "go.sum" }}
@@ -35,13 +35,18 @@ build-template: &build-template
     - store_test_results:
         path: /tmp/test-results
 
+    - run:
+        name: "Upload Test Coverage Report"
+        command:
+          curl -s https://codecov.io/bash | bash -s -- -f $TEST_RESULTS/coverage.txt -Z || echo 'Codecov upload failed'
+
 jobs:
-  current-go:
-    executor: current-go
+  go_1_14_job:
+    executor: go_1_14_img
     <<: *build-template
 
 workflows:
   version: 2
   build:
     jobs:
-      - current-go
+      - go_1_14_job

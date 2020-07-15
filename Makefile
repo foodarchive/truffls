@@ -30,15 +30,12 @@ test: ## run the test cases
 	$(GO_TEST) ./...
 
 .PHONY: test-with-coverage
-test-with-coverage: ## run testing with code coverage
+test-with-coverage: ## run testing with code coverage and output html file
 	$(GO_TEST_WITH_COVERAGE) ./... && go tool cover -html=coverage.txt -o coverage.html
 
 .PHONY: lint
 lint: $(TOOLS_DIR)/golangci-lint ## lint the source code using golangci
 	$(TOOLS_DIR)/golangci-lint run --fix && $(TOOLS_DIR)/golangci-lint run
-
-.PHONY: ci
-ci: lint check-clean-work-tree test-with-coverage license-check ## list of task that going to be executed on ci
 
 .PHONY: check-clean-work-tree
 check-clean-work-tree: ## check whether the working branch is clean or not
@@ -50,8 +47,8 @@ check-clean-work-tree: ## check whether the working branch is clean or not
 	  exit 1; \
 	fi
 
-.PHONY: license-check
-license-check:
+.PHONY: check-license
+check-license: ## make sure all go files have license header
 	@licRes=$$(for f in $(GO_FILES) ; do \
 	           awk '/Copyright The Truffls Contributors.|generated|GENERATED/ && NR<=3 { found=1; next } END { if (!found) print FILENAME }' $$f; \
 	   done); \
@@ -59,6 +56,10 @@ license-check:
 	           echo "license header checking failed:"; echo "$${licRes}"; \
 	           exit 1; \
 	   fi
+
+.PHONY: ci
+ci: check-clean-work-tree check-license lint test-with-coverage ## list of task that going to be executed on ci
+
 .PHONY: help
 help: ## help information about make commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
