@@ -1,7 +1,6 @@
 version: 2.1
 executors:
-  current-go:
-    resource_class: large
+  go_1_14:
     docker:
       - image: cimg/go:1.14
 
@@ -36,12 +35,12 @@ build-template: &build-template
         path: /tmp/test-results
 
 jobs:
-  current-go:
-    executor: current-go
+  go_1_14:
+    executor: go_1_14
     <<: *build-template
 
 workflows:
   version: 2
   build:
     jobs:
-      - current-go
+      - go_1_14
