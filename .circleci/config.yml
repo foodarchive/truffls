@@ -1,6 +1,9 @@
 version: 2.1
+orbs:
+  codecov: codecov/codecov@1.1.0
+
 executors:
-  go_1_14:
+  go_1_14_img:
     docker:
       - image: cimg/go:1.14
 
@@ -20,7 +23,7 @@ build-template: &build-template
         name: "Linter and Test Coverage Report"
         command: |
           make ci
-          mv coverage.html $TEST_RESULTS/
+          mv coverage.* $TEST_RESULTS/
 
     - save_cache:
         key: cimg-go-pkg-mod-{{ checksum "go.sum" }}
@@ -34,13 +37,17 @@ build-template: &build-template
     - store_test_results:
         path: /tmp/test-results
 
+    - codecov/upload:
+        file: /tmp/test-results/coverage.txt
+
+
 jobs:
-  go_1_14:
-    executor: go_1_14
+  go_1_14_job:
+    executor: go_1_14_img
     <<: *build-template
 
 workflows:
   version: 2
   build:
     jobs:
-      - go_1_14
+      - go_1_14_job
