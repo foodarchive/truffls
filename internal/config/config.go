@@ -19,11 +19,14 @@ import (
 )
 
 var (
+	// AppName is dynamically set by the toolchain or overridden by the Makefile.
+	AppName = "truffls"
+
 	// Version is dynamically set by the toolchain or overridden by the Makefile.
 	Version = "DEV"
 
 	// BuildDate is dynamically set at build time in the Makefile.
-	BuildDate = "" // YYYY-MM-DD
+	BuildDate = "2020-07-01" // YYYY-MM-DD
 )
 
 // Config struct store application configuration

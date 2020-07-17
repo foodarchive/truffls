@@ -27,19 +27,19 @@ import (
 // TLS server TLS configuration
 type TLS struct {
 	// TLS certificate, TLS.Key pair.
-	Cert     []byte
+	Cert []byte
 	// TLS private key, TLS.Cert pair.
-	Key      []byte
+	Key []byte
 	// TLS certificate file path, TLS.KeyFile pair.
 	CertFile string
 	// TLS private key file path, TLS.CertFile pair.
-	KeyFile  string
+	KeyFile string
 }
 
 // AutoTLS option for automatically installed certificate.
 type AutoTLS struct {
 	// Host allowed host for AutoTLS.
-	Host     string
+	Host string
 	// CacheDir certificate caching directory.
 	CacheDir string
 }

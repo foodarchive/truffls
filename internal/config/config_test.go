@@ -23,7 +23,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	pkgConfig.Load("truffls", "./testdata/config_test.yaml")
+	pkgConfig.Load("truffls", "./testdata/config_test.yml")
 	c, err := New()
 
 	assert.NoError(t, err)

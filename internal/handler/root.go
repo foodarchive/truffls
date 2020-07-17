@@ -21,6 +21,6 @@ import (
 )
 
 // Root handler for home endpoint.
-func Root(c *gin.Context)  {
+func Root(c *gin.Context) {
 	c.Status(http.StatusOK)
 }

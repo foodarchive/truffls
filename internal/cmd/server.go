@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package cmd
 
 import (
-	"github.com/foodarchive/truffls/internal/handler"
-	"github.com/gin-gonic/gin"
+	"github.com/foodarchive/truffls/internal/server"
+	"github.com/spf13/cobra"
 )
 
-// Router returns gin.Engine to be used for server handler.
-func Router() *gin.Engine {
-	g := gin.New()
-	g.Use(gin.Recovery())
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "Starts the HTTP(s) server",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return server.Start()
+	},
+}
 
-	g.GET("/", handler.Root)
-	return g
+func init() {
+	rootCmd.AddCommand(serverCmd)
 }

@@ -12,45 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package server
+package cmd
 
 import (
-	"net"
+	"log"
 
 	"github.com/foodarchive/truffls/internal/config"
-	"github.com/foodarchive/truffls/internal/handler"
-	pkgServer "github.com/foodarchive/truffls/pkg/server"
-	"github.com/gin-gonic/gin"
+	pkgConfig "github.com/foodarchive/truffls/pkg/config"
+	"github.com/spf13/cobra"
 )
 
 var (
-	cfg config.Config
+	cfgFile string
+	rootCmd = &cobra.Command{
+		Use: config.AppName,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Help()
+		},
+	}
 )
 
-// Start starts HTTP server.
-func Start() (err error) {
-	if cfg, err = config.New(); err != nil {
-		return
-	}
+func init() {
+	cobra.OnInitialize(func() {
+		pkgConfig.Load(config.AppName, cfgFile)
+	})
 
-	srv := pkgServer.New(
-		pkgServer.WithAddr(net.JoinHostPort(cfg.Server.Host, cfg.Server.Port)),
-		pkgServer.WithHandler(router()),
-	)
+	pf := rootCmd.PersistentFlags()
+	pf.StringVar(&cfgFile, "config", "", "config filepath")
+	pf.Bool("debug", false, "debugging mode")
 
-	return srv.Start()
+	pkgConfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))
 }
 
-func router() *gin.Engine {
-	if cfg.Debug {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
 	}
-
-	g := gin.New()
-	g.Use(gin.Recovery())
-
-	g.GET("/", handler.Root)
-	return g
 }
