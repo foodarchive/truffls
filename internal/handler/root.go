@@ -12,32 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package handler
 
 import (
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-var (
-	// Version is dynamically set by the toolchain or overridden by the Makefile.
-	Version = "DEV"
-
-	// BuildDate is dynamically set at build time in the Makefile.
-	BuildDate = "" // YYYY-MM-DD
-)
-
-// Config struct store application configuration
-type Config struct {
-	Debug  bool
-	Server struct {
-		Host string
-		Port string
-	}
-}
-
-// Create a new application configuration
-func New() (Config, error) {
-	var c Config
-	err := pkgConfig.Unmarshal(&c)
-	return c, err
+// Root handler for home endpoint.
+func Root(c *gin.Context)  {
+	c.Status(http.StatusOK)
 }

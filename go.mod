@@ -3,6 +3,7 @@ module github.com/foodarchive/truffls
 go 1.14
 
 require (
+	github.com/gin-gonic/gin v1.6.3
 	github.com/mitchellh/mapstructure v1.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.5
