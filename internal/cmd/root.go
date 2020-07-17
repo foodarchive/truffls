@@ -34,14 +34,18 @@ var (
 
 func init() {
 	cobra.OnInitialize(func() {
-		pkgConfig.Load(config.AppName, cfgFile)
+		if err := pkgConfig.Load(config.AppName, cfgFile); err != nil {
+			log.Fatal(err)
+		}
 	})
 
 	pf := rootCmd.PersistentFlags()
 	pf.StringVar(&cfgFile, "config", "", "config filepath")
 	pf.Bool("debug", false, "debugging mode")
 
-	pkgConfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))
+	if err := pkgConfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug")); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func Execute() {

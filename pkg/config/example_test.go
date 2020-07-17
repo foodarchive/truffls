@@ -67,8 +67,8 @@ func Example() {
 		_ = os.Unsetenv("SIMPLE_APP_NAME")
 	}()
 
-	config.Load("simple", configPath)
-	config.BindFlags(pflag.Lookup("env"))
+	_ = config.Load("simple", configPath)
+	_ = config.BindFlags(pflag.Lookup("env"))
 
 	var c Config
 	if err := config.Unmarshal(&c); err != nil {
