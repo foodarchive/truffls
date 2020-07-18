@@ -15,6 +15,7 @@
 package server
 
 import (
+	"net"
 	"net/http"
 )
 
@@ -26,9 +27,9 @@ func (fn Option) apply(h *Server) {
 }
 
 // WithAddr sets server address.
-func WithAddr(addr string) Option {
+func WithAddr(host, port string) Option {
 	return func(s *Server) {
-		s.server.Addr = addr
+		s.server.Addr = net.JoinHostPort(host, port)
 	}
 }
 
