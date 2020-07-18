@@ -44,6 +44,7 @@ type AutoTLS struct {
 	CacheDir string
 }
 
+// Server an HTTP(s) server.
 type Server struct {
 	server  *http.Server
 	tls     TLS
@@ -51,6 +52,7 @@ type Server struct {
 }
 
 var (
+	// ErrMissingCert thrown when starting TLS server without valid certificate.
 	ErrMissingCert = errors.New("missing https certificate")
 )
 

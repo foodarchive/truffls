@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package config is a https://github.com/spf13/viper wrapper
-// with some convention.
 package config
 
 import (
-	"log"
+	"errors"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+)
+
+var (
+	ErrEmptyNamespace = errors.New("config namespace must be provided")
 )
 
 type (
@@ -30,13 +33,13 @@ type (
 )
 
 // Load loading configuration from yaml file with namespace.
-func Load(namespace, filename string) {
+func Load(namespace, cfgFile string) error {
 	if namespace == "" {
-		log.Fatal("config namespace must be provided")
+		return ErrEmptyNamespace
 	}
 
-	if filename != "" {
-		viper.SetConfigFile(filename)
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
@@ -47,9 +50,8 @@ func Load(namespace, filename string) {
 
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix(namespace)
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatal(err)
-	}
+
+	return viper.ReadInConfig()
 }
 
 // Unmarshal unmarshals the config into a Struct.
@@ -64,8 +66,10 @@ func Unmarshal(v interface{}) error {
 }
 
 // BindFlags binds multiple keys to pflag.Flag.
-func BindFlags(flags ...*Flag) {
+func BindFlags(flags ...*Flag) error {
+	var err *multierror.Error
 	for _, flag := range flags {
-		_ = viper.BindPFlag(flag.Name, flag)
+		err = multierror.Append(err, viper.BindPFlag(flag.Name, flag))
 	}
+	return err.ErrorOrNil()
 }

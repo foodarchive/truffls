@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package server provides convenience methods to creates and starting
+// Package server provides convenience methods to creates and starting
 // HTTP or HTTPS server plus Let's Encrypt support.
 package server

@@ -12,23 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config_test
-
-import (
-	"testing"
-
-	. "github.com/foodarchive/truffls/internal/config"
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
-
-func TestNew(t *testing.T) {
-	require.NoError(t, pkgConfig.Load("truffls", "./testdata/config_test.yml"))
-	c, err := New()
-
-	assert.NoError(t, err)
-	assert.True(t, c.Debug)
-	assert.Equal(t, c.Server.Host, "www.example.com")
-	assert.Equal(t, c.Server.Port, "3000")
-}
+// Package config is a https://github.com/spf13/viper wrapper
+// with some convention.
+package config

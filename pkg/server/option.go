@@ -25,7 +25,7 @@ func (fn Option) apply(h *Server) {
 	fn(h)
 }
 
-// WithAddress sets server address.
+// WithAddr sets server address.
 func WithAddr(addr string) Option {
 	return func(s *Server) {
 		s.server.Addr = addr
@@ -47,7 +47,7 @@ func WithCertFile(cert, key string) Option {
 	}
 }
 
-// WithCertFile sets the certificate and matching private key.
+// WithCert sets the certificate and matching private key.
 func WithCert(cert, key []byte) Option {
 	return func(s *Server) {
 		s.tls.Cert = cert

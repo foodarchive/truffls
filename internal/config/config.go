@@ -29,7 +29,7 @@ var (
 	BuildDate = "2020-07-01" // YYYY-MM-DD
 )
 
-// Config struct store application configuration
+// Config struct store application configuration.
 type Config struct {
 	Debug  bool
 	Server struct {
@@ -38,7 +38,7 @@ type Config struct {
 	}
 }
 
-// Create a new application configuration
+// New create a new application configuration.
 func New() (Config, error) {
 	var c Config
 	err := pkgConfig.Unmarshal(&c)
