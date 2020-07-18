@@ -1,23 +1,24 @@
+---
 # See https://github.com/golangci/golangci-lint#config-file
 run:
-  issues-exit-code: 1 #Default
-  tests: true #Default
+    issues-exit-code: 1     # Default
+    tests: true             # Default
 
 linters:
-  enable:
-    - goimports
-    - golint
-    - gofmt
+    enable:
+        - goimports
+        - golint
+        - gofmt
 
 issues:
-  exclude-rules:
-    - path: _test\.go
-      text: "context.Context should be the first parameter of a function"
-      linters:
-        - golint
-    - path: _test\.go
-      text: "exported func.*returns unexported type.*which can be annoying to use"
-      linters:
-        - golint
+    exclude-rules:
+        - path: _test\.go
+          text: "context.Context should be the first parameter of a function"
+          linters:
+              - golint
+        - path: _test\.go
+          text: "exported func.*returns unexported type.*which can be annoying to use"
+          linters:
+              - golint
 
 linters-settings:
