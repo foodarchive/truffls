@@ -53,7 +53,7 @@ func Example_stdLog() {
 
 func Example_withCaller() {
 	setup()
-	log.Init(log.Config{ShowCaller: true, Level: "debug"})
+	log.Init(log.Config{Caller: true, Level: "debug"})
 
 	log.Debug().Msg("something went wrong")
 	// Output:

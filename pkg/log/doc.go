@@ -12,26 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package log simply a wrapper of zerolog.Logger.
 package log
-
-// Config logging configuration.
-type Config struct {
-	// Level log level config.
-	//
-	// Supported values: `trace`, `debug`, `info`, `warn`, `fatal`, `panic`.
-	// Default value "info".
-	Level string
-
-	// Output log output.
-	//
-	// Supported values: `console`, `stderr`, `stdout`.
-	// For `console` print log with pretty output,
-	// `stderr` and `stdout` print log with JSON format.
-	Out string
-
-	// StackTrace set this to true to enable stack stacktrace.
-	StackTrace bool
-
-	// Caller if enabled, print log caller filename and line number.
-	Caller bool
-}

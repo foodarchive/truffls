@@ -56,7 +56,7 @@ func Init(config Config) {
 	// Maybe add more write, eg: syslog, journald, etc,
 	// or supports multiple writer.
 	var w io.Writer
-	switch strings.ToLower(config.Output) {
+	switch strings.ToLower(config.Out) {
 	case outConsole:
 		w = zerolog.ConsoleWriter{Out: os.Stdout}
 	case outStdErr:
@@ -65,12 +65,12 @@ func Init(config Config) {
 		w = os.Stdout
 	}
 
-	if config.EnableStackTrace {
+	if config.StackTrace {
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	}
 
 	Log = zerolog.New(w).With().Timestamp().Logger()
-	if config.ShowCaller {
+	if config.Caller {
 		Log = Log.With().Caller().Logger()
 	}
 
