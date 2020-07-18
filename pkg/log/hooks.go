@@ -18,10 +18,29 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type noLevelHook struct{}
+// NoLevelWarnHook replace no level with warn log level.
+type NoLevelWarnHook struct{}
 
-func (h noLevelHook) Run(e *zerolog.Event, level zerolog.Level, _ string) {
+func (h NoLevelWarnHook) Run(e *Event, level Level, _ string) {
 	if level == zerolog.NoLevel {
 		e.Str(zerolog.LevelFieldName, zerolog.WarnLevel.String())
+	}
+}
+
+// NoLevelDebugHook replace no level with warn log level.
+type NoLevelDebugHook struct{}
+
+func (h NoLevelDebugHook) Run(e *Event, level Level, _ string) {
+	if level == zerolog.NoLevel {
+		e.Str(zerolog.LevelFieldName, zerolog.DebugLevel.String())
+	}
+}
+
+// NoLevelErrorHook replace no level with warn log level.
+type NoLevelErrorHook struct{}
+
+func (h NoLevelErrorHook) Run(e *Event, level Level, _ string) {
+	if level == zerolog.NoLevel {
+		e.Str(zerolog.LevelFieldName, zerolog.ErrorLevel.String())
 	}
 }

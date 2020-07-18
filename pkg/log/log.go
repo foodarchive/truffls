@@ -29,8 +29,18 @@ const (
 	outStdErr  = "stderr"
 )
 
+type (
+	// Event zerolog.Event alias.
+	Event = zerolog.Event
+	// Hook zerolog.Hook alias.
+	Hook = zerolog.Hook
+	// Logger zerolog.Logger alias.
+	Logger = zerolog.Logger
+	Level = zerolog.Level
+)
+
 var (
-	l zerolog.Logger
+	Log Logger
 )
 
 // Init initialize logger based on Config.
@@ -58,33 +68,38 @@ func Init(config Config) {
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	}
 
-	l = zerolog.New(w).With().Timestamp().Logger()
+	Log = zerolog.New(w).With().Timestamp().Logger()
 	if config.ShowCaller {
-		l = l.With().Caller().Logger()
+		Log = Log.With().Caller().Logger()
 	}
 
 	// replace standard logger with zerolog
-	hook := l.Hook(noLevelHook{})
+	hook := Log.Hook(NoLevelWarnHook{})
 	stdLog.SetFlags(0)
 	stdLog.SetOutput(hook)
 }
 
 // Debug starts logging with debug level.
-func Debug() *zerolog.Event {
-	return l.Debug()
+func Debug() *Event {
+	return Log.Debug()
 }
 
 // Info starts logging with info level.
-func Info() *zerolog.Event {
-	return l.Info()
+func Info() *Event {
+	return Log.Info()
 }
 
 // Error starts logging with error level.
-func Error() *zerolog.Event {
-	return l.Error()
+func Error() *Event {
+	return Log.Error()
 }
 
 // Info starts logging with fatal level.
-func Fatal() *zerolog.Event {
-	return l.Fatal()
+func Fatal() *Event {
+	return Log.Fatal()
+}
+
+// WithHook returns a logger with the h Hook.
+func WithHook(h Hook) Logger {
+	return Log.Hook(h)
 }

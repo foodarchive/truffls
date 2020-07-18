@@ -17,15 +17,16 @@ package server
 import (
 	"github.com/foodarchive/truffls/internal/config"
 	"github.com/foodarchive/truffls/internal/server/handler"
-	s "github.com/foodarchive/truffls/pkg/server"
+	"github.com/foodarchive/truffls/pkg/log"
+	pkgServer "github.com/foodarchive/truffls/pkg/server"
 	"github.com/gin-gonic/gin"
 )
 
 // Start starts HTTP server.
 func Start() (err error) {
-	srv := s.New(
-		s.Addr(config.Server.Host, config.Server.Port),
-		s.Handler(router()),
+	srv := pkgServer.New(
+		pkgServer.Addr(config.Server.Host, config.Server.Port),
+		pkgServer.Handler(router()),
 	)
 
 	return srv.Start()
@@ -38,7 +39,12 @@ func router() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+	gin.DefaultWriter = log.WithHook(log.NoLevelDebugHook{})
+	gin.DefaultErrorWriter = log.WithHook(log.NoLevelErrorHook{})
+
 	r := gin.New()
+	r.RemoveExtraSlash = true
+
 	r.Use(gin.Recovery())
 
 	r.GET("/", handler.Root)
