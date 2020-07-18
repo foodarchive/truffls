@@ -26,38 +26,38 @@ func (fn Option) apply(h *Server) {
 	fn(h)
 }
 
-// WithAddr sets server address.
-func WithAddr(host, port string) Option {
+// Addr sets server address.
+func Addr(host, port string) Option {
 	return func(s *Server) {
 		s.server.Addr = net.JoinHostPort(host, port)
 	}
 }
 
-// WithHandler assign server http handler.
-func WithHandler(handler http.Handler) Option {
+// Handler assign server http handler.
+func Handler(handler http.Handler) Option {
 	return func(s *Server) {
 		s.server.Handler = handler
 	}
 }
 
-// WithCertFile sets the location of the certificate and matching private key files.
-func WithCertFile(cert, key string) Option {
+// CertFile sets the location of the certificate and matching private key files.
+func CertFile(cert, key string) Option {
 	return func(s *Server) {
 		s.tls.CertFile = cert
 		s.tls.KeyFile = key
 	}
 }
 
-// WithCert sets the certificate and matching private key.
-func WithCert(cert, key []byte) Option {
+// Cert sets the certificate and matching private key.
+func Cert(cert, key []byte) Option {
 	return func(s *Server) {
 		s.tls.Cert = cert
 		s.tls.Key = key
 	}
 }
 
-// WithAutoTLS sets host and cacheDir for auto-TLS.
-func WithAutoTLS(host, cacheDir string) Option {
+// AutoTLS sets host and cacheDir for auto-TLS.
+func AutoTLS(host, cacheDir string) Option {
 	return func(s *Server) {
 		s.autoTLS.Host = host
 		s.autoTLS.CacheDir = cacheDir

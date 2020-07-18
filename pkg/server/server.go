@@ -24,31 +24,25 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-// TLS server TLS configuration
-type TLS struct {
-	// TLS certificate, TLS.Key pair.
-	Cert []byte
-	// TLS private key, TLS.Cert pair.
-	Key []byte
-	// TLS certificate file path, TLS.KeyFile pair.
-	CertFile string
-	// TLS private key file path, TLS.CertFile pair.
-	KeyFile string
-}
-
-// AutoTLS option for automatically installed certificate.
-type AutoTLS struct {
-	// Host allowed host for AutoTLS.
-	Host string
-	// CacheDir certificate caching directory.
-	CacheDir string
-}
-
 // Server an HTTP(s) server.
 type Server struct {
 	server  *http.Server
-	tls     TLS
-	autoTLS AutoTLS
+	tls     struct{
+		// TLS certificate, TLS.Key pair.
+		Cert []byte
+		// TLS private key, TLS.Cert pair.
+		Key []byte
+		// TLS certificate file path, TLS.KeyFile pair.
+		CertFile string
+		// TLS private key file path, TLS.CertFile pair.
+		KeyFile string
+	}
+	autoTLS struct {
+		// Host allowed host for AutoTLS.
+		Host string
+		// CacheDir certificate caching directory.
+		CacheDir string
+	}
 }
 
 var (

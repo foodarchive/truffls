@@ -27,8 +27,8 @@ import (
 
 func TestStart(t *testing.T) {
 	srv := server.New(
-		server.WithAddr("", "0"),
-		server.WithHandler(http.NewServeMux()),
+		server.Addr("", "0"),
+		server.Handler(http.NewServeMux()),
 	)
 	go func() {
 		assert.NoError(t, srv.Start())
@@ -44,52 +44,46 @@ func TestStartTLS(t *testing.T) {
 	require.NoError(t, err)
 
 	testCases := []struct {
-		tlsConfig server.TLS
+		certFile  string
+		keyFile   string
+		cert      []byte
+		key       []byte
 		assertion assert.ErrorAssertionFunc
 		name      string
 	}{
 		{
-			tlsConfig: server.TLS{
-				CertFile: "./testdata/localhost.crt",
-				KeyFile:  "./testdata/localhost.key",
-			},
+			certFile:  "./testdata/localhost.crt",
+			keyFile:   "./testdata/localhost.key",
 			assertion: assert.NoError,
 			name:      "ValidCertKeyFile",
 		},
 		{
-			tlsConfig: server.TLS{
-				Cert: cert,
-				Key:  key,
-			},
+
+			cert:      cert,
+			key:       key,
 			assertion: assert.NoError,
 			name:      "ValidCertKey",
 		},
 		{
-			tlsConfig: server.TLS{},
 			assertion: assert.Error,
 			name:      "InvalidCert",
 		},
 		{
-			tlsConfig: server.TLS{
-				CertFile: "./testdata/invalid.crt",
-				KeyFile:  "./testdata/localhost.key",
-			},
+
+			certFile:  "./testdata/invalid.crt",
+			keyFile:   "./testdata/localhost.key",
 			assertion: assert.Error,
 			name:      "InvalidCertFile",
 		},
 		{
-			tlsConfig: server.TLS{
-				CertFile: "./testdata/localhost.crt",
-				KeyFile:  "./testdata/invalid.key",
-			},
+			certFile:  "./testdata/localhost.crt",
+			keyFile:   "./testdata/invalid.key",
 			assertion: assert.Error,
 			name:      "InvalidKeyFile",
 		},
 		{
-			tlsConfig: server.TLS{
-				Cert: []byte{1},
-				Key:  []byte{2},
-			},
+			cert:      []byte{1},
+			key:       []byte{2},
 			assertion: assert.Error,
 			name:      "InvalidKeyPair",
 		},
@@ -99,10 +93,10 @@ func TestStartTLS(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			srv := server.New(
-				server.WithHandler(http.NewServeMux()),
-				server.WithAddr("", "0"),
-				server.WithCertFile(tc.tlsConfig.CertFile, tc.tlsConfig.KeyFile),
-				server.WithCert(tc.tlsConfig.Cert, tc.tlsConfig.Key),
+				server.Handler(http.NewServeMux()),
+				server.Addr("", "0"),
+				server.CertFile(tc.certFile, tc.keyFile),
+				server.Cert(tc.cert, tc.key),
 			)
 			go func() {
 				err := srv.StartTLS()
@@ -116,9 +110,9 @@ func TestStartTLS(t *testing.T) {
 
 func TestStartAutoTLS(t *testing.T) {
 	srv := server.New(
-		server.WithHandler(http.NewServeMux()),
-		server.WithAddr("", "0"),
-		server.WithAutoTLS("", "./testdata"),
+		server.Handler(http.NewServeMux()),
+		server.Addr("", "0"),
+		server.AutoTLS("", "./testdata"),
 	)
 	go func() {
 		assert.NoError(t, srv.StartAutoTLS())
