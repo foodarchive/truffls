@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config_test
+package cmd
 
 import (
-	"testing"
-
-	. "github.com/foodarchive/truffls/internal/config"
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
-	"github.com/stretchr/testify/assert"
+	"github.com/foodarchive/truffls/internal/server"
+	"github.com/spf13/cobra"
 )
 
-func TestNew(t *testing.T) {
-	pkgConfig.Load("truffls", "./testdata/config_test.yml")
-	c, err := New()
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "Starts the HTTP(s) server",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return server.Start()
+	},
+}
 
-	assert.NoError(t, err)
-	assert.True(t, c.Debug)
+func init() {
+	rootCmd.AddCommand(serverCmd)
 }

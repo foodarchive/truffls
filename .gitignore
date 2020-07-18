@@ -6,6 +6,7 @@
 *.test
 *.out
 *_sample.yml
+config.yml
 coverage.*
 bin/
 vendor/

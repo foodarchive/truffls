@@ -12,20 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config_test
-
-import (
-	"testing"
-
-	. "github.com/foodarchive/truffls/internal/config"
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
-	"github.com/stretchr/testify/assert"
-)
-
-func TestNew(t *testing.T) {
-	pkgConfig.Load("truffls", "./testdata/config_test.yml")
-	c, err := New()
-
-	assert.NoError(t, err)
-	assert.True(t, c.Debug)
-}
+// package server provides convenience methods to creates and starting
+// HTTP or HTTPS server plus Let's Encrypt support.
+package server

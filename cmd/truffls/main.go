@@ -15,12 +15,9 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/foodarchive/truffls/internal/config"
+	"github.com/foodarchive/truffls/internal/cmd"
 )
 
 func main() {
-	fmt.Println(config.Version)
-	fmt.Println(config.BuildDate)
+	cmd.Execute()
 }

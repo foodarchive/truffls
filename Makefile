@@ -9,7 +9,8 @@ VERSION ?= $(shell git describe --tags 2>/dev/null || git rev-parse --short HEAD
 BUILD_DATE ?= $(shell date "+%Y-%m-%d")
 
 GO_LDFLAGS := -X github.com/foodarchive/$(EXECUTABLE)/internal/config.BuildDate=$(BUILD_DATE) \
-	-X github.com/foodarchive/$(EXECUTABLE)/internal/config.Version=$(VERSION)
+	-X github.com/foodarchive/$(EXECUTABLE)/internal/config.Version=$(VERSION) \
+	-X github.com/foodarchive/$(EXECUTABLE)/internal/config.AppName=$(EXECUTABLE)
 
 GO_TEST_MIN = go test -v -timeout 30s
 GO_TEST = $(GO_TEST_MIN) -race

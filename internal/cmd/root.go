@@ -12,20 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config_test
+package cmd
 
 import (
-	"testing"
+	"log"
 
-	. "github.com/foodarchive/truffls/internal/config"
+	"github.com/foodarchive/truffls/internal/config"
 	pkgConfig "github.com/foodarchive/truffls/pkg/config"
-	"github.com/stretchr/testify/assert"
+	"github.com/spf13/cobra"
 )
 
-func TestNew(t *testing.T) {
-	pkgConfig.Load("truffls", "./testdata/config_test.yml")
-	c, err := New()
+var (
+	cfgFile string
+	rootCmd = &cobra.Command{
+		Use: config.AppName,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Help()
+		},
+	}
+)
 
-	assert.NoError(t, err)
-	assert.True(t, c.Debug)
+func init() {
+	cobra.OnInitialize(func() {
+		pkgConfig.Load(config.AppName, cfgFile)
+	})
+
+	pf := rootCmd.PersistentFlags()
+	pf.StringVar(&cfgFile, "config", "", "config filepath")
+	pf.Bool("debug", false, "debugging mode")
+
+	pkgConfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
+	}
 }
