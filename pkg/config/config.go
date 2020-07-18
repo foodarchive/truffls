@@ -24,6 +24,7 @@ import (
 )
 
 var (
+	// ErrEmptyNamespace thrown when namespace is not provided.
 	ErrEmptyNamespace = errors.New("config namespace must be provided")
 )
 
