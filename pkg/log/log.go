@@ -36,6 +36,7 @@ type (
 	Hook = zerolog.Hook
 	// Logger zerolog.Logger alias.
 	Logger = zerolog.Logger
+	// Level zerolog.Level alias.
 	Level = zerolog.Level
 )
 

@@ -20,18 +20,18 @@ type Config struct {
 	//
 	// Supported values: `trace`, `debug`, `info`, `warn`, `fatal`, `panic`.
 	// Default value "info".
-	Level            string
+	Level string
 
 	// Output log output.
 	//
 	// Supported values: `console`, `stderr`, `stdout`.
 	// For `console` print log with pretty output,
 	// `stderr` and `stdout` print log with JSON format.
-	Output           string
+	Output string
 
 	// EnableStackTrace set this to true to enable stack stacktrace.
 	EnableStackTrace bool
 
 	// ShowCaller if enabled, print log caller filename and line number.
-	ShowCaller       bool
+	ShowCaller bool
 }

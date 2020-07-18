@@ -26,8 +26,8 @@ import (
 
 // Server an HTTP(s) server.
 type Server struct {
-	server  *http.Server
-	tls     struct{
+	server *http.Server
+	tls    struct {
 		// TLS certificate, TLS.Key pair.
 		Cert []byte
 		// TLS private key, TLS.Cert pair.
