@@ -42,7 +42,7 @@ func Example() {
 	// {"level":"info","time":"2020-07-18T21:01:05Z","message":"hello world"}
 }
 
-func Example_StdLog() {
+func Example_stdLog() {
 	setup()
 	log.Init(log.Config{})
 
@@ -51,7 +51,7 @@ func Example_StdLog() {
 	// {"time":"2020-07-18T21:01:05Z","level":"warn","message":"hello from standard log"}
 }
 
-func Example_WithCaller() {
+func Example_withCaller() {
 	setup()
 	log.Init(log.Config{ShowCaller: true, Level: "debug"})
 
