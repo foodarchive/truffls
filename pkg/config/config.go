@@ -71,5 +71,5 @@ func BindFlags(flags ...*Flag) error {
 	for _, flag := range flags {
 		err = multierror.Append(err, viper.BindPFlag(flag.Name, flag))
 	}
-	return err
+	return err.ErrorOrNil()
 }

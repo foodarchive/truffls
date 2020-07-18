@@ -48,6 +48,7 @@ func init() {
 	}
 }
 
+// Execute run commandline, exit with status 1 if there's an error.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal(err)
