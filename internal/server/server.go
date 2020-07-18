@@ -15,42 +15,35 @@
 package server
 
 import (
-	"net"
-
 	"github.com/foodarchive/truffls/internal/config"
-	"github.com/foodarchive/truffls/internal/handler"
-	pkgServer "github.com/foodarchive/truffls/pkg/server"
+	"github.com/foodarchive/truffls/internal/server/handler"
+	"github.com/foodarchive/truffls/pkg/log"
+	s "github.com/foodarchive/truffls/pkg/server"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	cfg config.Config
 )
 
 // Start starts HTTP server.
 func Start() (err error) {
-	if cfg, err = config.New(); err != nil {
-		return
-	}
-
-	srv := pkgServer.New(
-		pkgServer.WithAddr(net.JoinHostPort(cfg.Server.Host, cfg.Server.Port)),
-		pkgServer.WithHandler(router()),
+	srv := s.New(
+		s.WithAddr(config.Server.Host, config.Server.Port),
+		s.WithHandler(router()),
 	)
 
 	return srv.Start()
 }
 
 func router() *gin.Engine {
-	if cfg.Debug {
+	if config.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	g := gin.New()
-	g.Use(gin.Recovery())
+	gin.DefaultWriter = log.Logger()
 
-	g.GET("/", handler.Root)
-	return g
+	r := gin.New()
+	r.Use(gin.Recovery())
+
+	r.GET("/", handler.Root)
+	return r
 }

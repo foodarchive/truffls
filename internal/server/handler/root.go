@@ -17,13 +17,10 @@ package handler
 import (
 	"net/http"
 
-	"github.com/foodarchive/truffls/pkg/log"
 	"github.com/gin-gonic/gin"
 )
 
 // Root handler for home endpoint.
 func Root(c *gin.Context) {
-	log.Debug().Msg("debug log")
-	log.Info().Msg("info log")
 	c.Status(http.StatusOK)
 }

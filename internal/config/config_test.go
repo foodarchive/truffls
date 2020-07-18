@@ -17,18 +17,14 @@ package config_test
 import (
 	"testing"
 
-	. "github.com/foodarchive/truffls/internal/config"
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
+	"github.com/foodarchive/truffls/internal/config"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func TestNew(t *testing.T) {
-	require.NoError(t, pkgConfig.Load("truffls", "./testdata/config_test.yml"))
-	c, err := New()
+func TestInit(t *testing.T) {
+	config.Init("./testdata/config_test.yml")
 
-	assert.NoError(t, err)
-	assert.True(t, c.Debug)
-	assert.Equal(t, c.Server.Host, "www.example.com")
-	assert.Equal(t, c.Server.Port, "3000")
+	assert.True(t, config.Debug)
+	assert.Equal(t, config.Server.Host, "www.example.com")
+	assert.Equal(t, config.Server.Port, "3000")
 }
