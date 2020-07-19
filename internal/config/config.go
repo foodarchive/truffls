@@ -22,8 +22,9 @@ import (
 )
 
 type server struct {
-	Host string
-	Port string
+	Host    string
+	Port    string
+	GinMode string
 }
 
 type config struct {

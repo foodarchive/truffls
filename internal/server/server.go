@@ -25,20 +25,15 @@ import (
 // Start starts HTTP server.
 func Start() (err error) {
 	srv := pkgServer.New(
-		pkgServer.Addr(config.Server.Host, config.Server.Port),
-		pkgServer.Handler(router()),
+		pkgServer.WithAddr(config.Server.Host, config.Server.Port),
+		pkgServer.WithHandler(router()),
 	)
 
 	return srv.Start()
 }
 
 func router() *gin.Engine {
-	if config.Debug {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
+	gin.SetMode(config.Server.GinMode)
 	gin.DefaultWriter = log.WithHook(log.NoLevelDebugHook{})
 	gin.DefaultErrorWriter = log.WithHook(log.NoLevelErrorHook{})
 

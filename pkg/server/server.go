@@ -30,15 +30,15 @@ type Server struct {
 	tls    struct {
 		// TLS certificate, TLS.Key pair.
 		Cert []byte
-		// TLS private key, TLS.Cert pair.
+		// TLS private key, TLS.WithCert pair.
 		Key []byte
 		// TLS certificate file path, TLS.KeyFile pair.
 		CertFile string
-		// TLS private key file path, TLS.CertFile pair.
+		// TLS private key file path, TLS.WithCertFile pair.
 		KeyFile string
 	}
 	autoTLS struct {
-		// Host allowed host for AutoTLS.
+		// Host allowed host for WithAutoTLS.
 		Host string
 		// CacheDir certificate caching directory.
 		CacheDir string
@@ -72,7 +72,7 @@ func (s *Server) Start() error {
 // StartTLS starts HTTPS server.
 //
 // The certificate and matching private key must provide by setting the TLS option.
-// Either pair of TLS.CertFile and TLS.KeyFile or TLS.Cert and TLS.Key must be provided.
+// Either pair of TLS.WithCertFile and TLS.KeyFile or TLS.WithCert and TLS.Key must be provided.
 func (s *Server) StartTLS() (err error) {
 	var cert, key []byte
 	cfg := &tls.Config{Certificates: make([]tls.Certificate, 1)}

@@ -27,8 +27,8 @@ import (
 
 func ExampleServer_Start() {
 	srv := server.New(
-		server.Addr("", "9876"),
-		server.Handler(mux()),
+		server.WithAddr("", "9876"),
+		server.WithHandler(mux()),
 	)
 
 	go func() {
@@ -58,9 +58,9 @@ func ExampleServer_Start() {
 
 func ExampleServer_StartTLS() {
 	srv := server.New(
-		server.Addr("", "8765"),
-		server.Handler(mux()),
-		server.CertFile(
+		server.WithAddr("", "8765"),
+		server.WithHandler(mux()),
+		server.WithCertFile(
 			"./testdata/localhost.crt",
 			"./testdata/localhost.key",
 		),
