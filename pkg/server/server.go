@@ -24,31 +24,25 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 )
 
-// TLS server TLS configuration
-type TLS struct {
-	// TLS certificate, TLS.Key pair.
-	Cert []byte
-	// TLS private key, TLS.Cert pair.
-	Key []byte
-	// TLS certificate file path, TLS.KeyFile pair.
-	CertFile string
-	// TLS private key file path, TLS.CertFile pair.
-	KeyFile string
-}
-
-// AutoTLS option for automatically installed certificate.
-type AutoTLS struct {
-	// Host allowed host for AutoTLS.
-	Host string
-	// CacheDir certificate caching directory.
-	CacheDir string
-}
-
 // Server an HTTP(s) server.
 type Server struct {
-	server  *http.Server
-	tls     TLS
-	autoTLS AutoTLS
+	server *http.Server
+	tls    struct {
+		// TLS certificate, TLS.Key pair.
+		Cert []byte
+		// TLS private key, TLS.WithCert pair.
+		Key []byte
+		// TLS certificate file path, TLS.KeyFile pair.
+		CertFile string
+		// TLS private key file path, TLS.WithCertFile pair.
+		KeyFile string
+	}
+	autoTLS struct {
+		// Host allowed host for WithAutoTLS.
+		Host string
+		// CacheDir certificate caching directory.
+		CacheDir string
+	}
 }
 
 var (
@@ -77,8 +71,11 @@ func (s *Server) Start() error {
 
 // StartTLS starts HTTPS server.
 //
-// The certificate and matching private key must provide by setting the TLS option.
-// Either pair of TLS.CertFile and TLS.KeyFile or TLS.Cert and TLS.Key must be provided.
+// The certificate and matching private key must provide
+// by setting the TLS option.
+//
+// Either pair of TLS.CertFile and TLS.KeyFile
+// or TLS.Cert and TLS.Key must be provided.
 func (s *Server) StartTLS() (err error) {
 	var cert, key []byte
 	cfg := &tls.Config{Certificates: make([]tls.Certificate, 1)}
@@ -104,7 +101,8 @@ func (s *Server) StartTLS() (err error) {
 	return s.listenAndServe()
 }
 
-// StartAutoTLS starts an HTTPS server using certificates automatically installed from https://letsencrypt.org.
+// StartAutoTLS starts an HTTPS server using certificates
+// automatically installed from https://letsencrypt.org.
 func (s *Server) StartAutoTLS() error {
 	m := autocert.Manager{
 		Prompt:     autocert.AcceptTOS,

@@ -16,10 +16,19 @@ package config_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/foodarchive/truffls/pkg/config"
+	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+type configTest struct {
+	Foo     string `config:"bar"`
+	Elapsed time.Duration
+	Arr     []string
+}
 
 func TestLoad(t *testing.T) {
 	testCases := []struct {
@@ -62,9 +71,29 @@ func TestLoad(t *testing.T) {
 }
 
 func TestUnmarshal(t *testing.T) {
+	require.NoError(t, config.Load("config_test", "./testdata/config_test.yml"))
 
+	var c configTest
+	assert.NoError(t, config.Unmarshal(&c))
+	assert.Equal(t, c.Foo, "baz")
+	assert.Equal(t, c.Elapsed, 5*time.Second)
+	assert.Equal(t, c.Arr, []string{"hello", "world"})
 }
 
 func TestBindFlags(t *testing.T) {
+	require.NoError(t, config.Load("config_test", "./testdata/config_test.yml"))
 
+	f := pflag.NewFlagSet("config_flag_test", pflag.ContinueOnError)
+	f.String("bar", "", "")
+	f.String("elapsed", "", "")
+
+	require.NoError(t, f.Set("bar", "yolo"))
+	require.NoError(t, f.Set("elapsed", "10s"))
+
+	assert.NoError(t, config.BindFlags(f.Lookup("bar"), f.Lookup("elapsed")))
+
+	var c configTest
+	require.NoError(t, config.Unmarshal(&c))
+	assert.Equal(t, c.Foo, "yolo")
+	assert.Equal(t, c.Elapsed, 10*time.Second)
 }

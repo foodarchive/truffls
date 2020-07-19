@@ -12,25 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config_test
+package log
 
-import (
-	"testing"
+// Config logging configuration.
+type Config struct {
+	// Level log level config.
+	//
+	// Supported values: `trace`, `debug`, `info`, `warn`, `fatal`, `panic`.
+	// Default value "info".
+	Level string
 
-	"github.com/foodarchive/truffls/internal/config"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-)
+	// Output log output.
+	//
+	// Supported values: `console`, `stderr`, `stdout`.
+	// For `console` print log with pretty output,
+	// `stderr` and `stdout` print log with JSON format.
+	Out string
 
-func TestInit(t *testing.T) {
-	require.NoError(t, config.Load("./testdata/config_test.yml"))
+	// StackTrace set this to true to enable stack stacktrace.
+	StackTrace bool
 
-	assert.True(t, config.Debug)
-	assert.Equal(t, config.Server.Host, "www.example.com")
-	assert.Equal(t, config.Server.Port, "3000")
-}
-
-func TestInit_Error(t *testing.T)  {
-	assert.Error(t, config.Load("./testdata/non_existing_file"))
-	assert.Error(t, config.Load("./testdata/config_invalid_test.yml"))
+	// Caller if enabled, print log caller filename and line number.
+	Caller bool
 }

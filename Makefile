@@ -16,11 +16,14 @@ GO_TEST_MIN = go test -v -timeout 30s
 GO_TEST = $(GO_TEST_MIN) -race
 GO_TEST_WITH_COVERAGE = $(GO_TEST) -coverprofile=coverage.txt -covermode=atomic
 
-.DEFAULT_GOAL = help
+.DEFAULT_GOAL = precommit
 
 $(TOOLS_DIR)/golangci-lint: $(TOOLS_MOD_DIR)/go.mod $(TOOLS_MOD_DIR)/go.sum $(TOOLS_MOD_DIR)/tools.go
 	cd $(TOOLS_MOD_DIR) && \
 	go build -o $(TOOLS_DIR)/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+
+.PHONY: precommit
+precommit: check-license test lint ## run steps to make sure code pass on CI
 
 .PHONY: build
 build: $(GO_FILES) ## build the application

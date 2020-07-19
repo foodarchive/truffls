@@ -15,42 +15,33 @@
 package server
 
 import (
-	"net"
-
 	"github.com/foodarchive/truffls/internal/config"
-	"github.com/foodarchive/truffls/internal/handler"
-	pkgServer "github.com/foodarchive/truffls/pkg/server"
+	"github.com/foodarchive/truffls/internal/server/handler"
+	"github.com/foodarchive/truffls/pkg/log"
+	pkgserver "github.com/foodarchive/truffls/pkg/server"
 	"github.com/gin-gonic/gin"
-)
-
-var (
-	cfg config.Config
 )
 
 // Start starts HTTP server.
 func Start() (err error) {
-	if cfg, err = config.New(); err != nil {
-		return
-	}
-
-	srv := pkgServer.New(
-		pkgServer.WithAddr(net.JoinHostPort(cfg.Server.Host, cfg.Server.Port)),
-		pkgServer.WithHandler(router()),
+	srv := pkgserver.New(
+		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
+		pkgserver.WithHandler(router()),
 	)
 
 	return srv.Start()
 }
 
 func router() *gin.Engine {
-	if cfg.Debug {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	gin.SetMode(config.Server.GinMode)
+	gin.DefaultWriter = log.WithHook(log.NoLevelDebugHook{})
+	gin.DefaultErrorWriter = log.WithHook(log.NoLevelErrorHook{})
 
-	g := gin.New()
-	g.Use(gin.Recovery())
+	r := gin.New()
+	r.RemoveExtraSlash = true
 
-	g.GET("/", handler.Root)
-	return g
+	r.Use(gin.Recovery())
+
+	r.GET("/", handler.Root)
+	return r
 }

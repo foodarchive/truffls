@@ -15,32 +15,56 @@
 package config
 
 import (
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
+	pkgconfig "github.com/foodarchive/truffls/pkg/config"
+	pkglog "github.com/foodarchive/truffls/pkg/log"
 )
+
+type server struct {
+	Host    string
+	Port    string
+	GinMode string
+}
+
+type config struct {
+	Debug  bool
+	Server server
+	Log    pkglog.Config
+}
 
 var (
 	// AppName is dynamically set by the toolchain or overridden by the Makefile.
 	AppName = "truffls"
-
 	// Version is dynamically set by the toolchain or overridden by the Makefile.
 	Version = "DEV"
-
 	// BuildDate is dynamically set at build time in the Makefile.
 	BuildDate = "2020-07-01" // YYYY-MM-DD
+	// Debug turn on/of debugging mode.
+	Debug bool
+	// Server configuration.
+	Server server
+	// Log configuration for logging package.
+	Log pkglog.Config
 )
 
-// Config struct store application configuration.
-type Config struct {
-	Debug  bool
-	Server struct {
-		Host string
-		Port string
+// Load config file, return error when failed to load config file
+// or unmarshaling config struct.
+func Load(configFile string) error {
+	if err := pkgconfig.Load(AppName, configFile); err != nil {
+		return err
 	}
-}
 
-// New create a new application configuration.
-func New() (Config, error) {
-	var c Config
-	err := pkgConfig.Unmarshal(&c)
-	return c, err
+	var c config
+	if err := pkgconfig.Unmarshal(&c); err != nil {
+		return err
+	}
+
+	Debug = c.Debug
+	Server = c.Server
+	Log = c.Log
+
+	if Debug {
+		Log.Level = "debug"
+	}
+
+	return nil
 }
