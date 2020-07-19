@@ -36,19 +36,21 @@ type config struct {
 var (
 	// AppName is dynamically set by the toolchain or overridden by the Makefile.
 	AppName = "truffls"
-
 	// Version is dynamically set by the toolchain or overridden by the Makefile.
 	Version = "DEV"
-
 	// BuildDate is dynamically set at build time in the Makefile.
 	BuildDate = "2020-07-01" // YYYY-MM-DD
-
-	Debug  bool
+	// Debug turn on/of debugging mode.
+	Debug bool
+	// Server configuration.
 	Server server
-	Log    pkgLog.Config
+	// Log configuration for logging package.
+	Log pkgLog.Config
 )
 
-func Init(configFile string) {
+// Load config file, return error when failed to load config file
+// or unmarshaling config struct.
+func Load(configFile string) {
 	if err := pkgConfig.Load(AppName, configFile); err != nil {
 		log.Fatal(err)
 	}

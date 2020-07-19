@@ -35,7 +35,7 @@ var (
 
 func init() {
 	cobra.OnInitialize(func() {
-		config.Init(cfgFile)
+		config.Load(cfgFile)
 		log.Init(config.Log)
 	})
 

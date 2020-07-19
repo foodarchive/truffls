@@ -22,7 +22,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	config.Init("./testdata/config_test.yml")
+	config.Load("./testdata/config_test.yml")
 
 	assert.True(t, config.Debug)
 	assert.Equal(t, config.Server.Host, "www.example.com")
