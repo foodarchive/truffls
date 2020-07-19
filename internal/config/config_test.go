@@ -30,7 +30,7 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, config.Server.Port, "3000")
 }
 
-func TestInit_Error(t *testing.T)  {
+func TestInit_Error(t *testing.T) {
 	assert.Error(t, config.Load("./testdata/non_existing_file"))
 	assert.Error(t, config.Load("./testdata/config_invalid_test.yml"))
 }
