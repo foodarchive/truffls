@@ -16,7 +16,7 @@ package log
 
 import (
 	"io"
-	stdLog "log"
+	stdlog "log"
 	"os"
 	"strings"
 
@@ -26,7 +26,7 @@ import (
 
 const (
 	outConsole = "console"
-	outStdErr  = "stderr"
+	outStderr  = "stderr"
 )
 
 type (
@@ -59,7 +59,7 @@ func Init(config Config) {
 	switch strings.ToLower(config.Out) {
 	case outConsole:
 		w = zerolog.ConsoleWriter{Out: os.Stdout}
-	case outStdErr:
+	case outStderr:
 		w = os.Stderr
 	default:
 		w = os.Stdout
@@ -76,8 +76,8 @@ func Init(config Config) {
 
 	// replace standard logger with zerolog
 	hook := Log.Hook(NoLevelWarnHook{})
-	stdLog.SetFlags(0)
-	stdLog.SetOutput(hook)
+	stdlog.SetFlags(0)
+	stdlog.SetOutput(hook)
 }
 
 // Debug starts logging with debug level.
@@ -96,6 +96,7 @@ func Error() *Event {
 }
 
 // Info starts logging with fatal level.
+// Note: under the hood it will call os.Exit(1).
 func Fatal() *Event {
 	return Log.Fatal()
 }

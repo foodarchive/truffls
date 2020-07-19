@@ -15,10 +15,10 @@
 package cmd
 
 import (
-	stdLog "log"
+	stdlog "log"
 
 	"github.com/foodarchive/truffls/internal/config"
-	pkgCfg "github.com/foodarchive/truffls/pkg/config"
+	pkgconfig "github.com/foodarchive/truffls/pkg/config"
 	"github.com/foodarchive/truffls/pkg/log"
 	"github.com/spf13/cobra"
 )
@@ -35,7 +35,10 @@ var (
 
 func init() {
 	cobra.OnInitialize(func() {
-		config.Load(cfgFile)
+		if err := config.Load(cfgFile); err != nil {
+			stdlog.Fatal(err)
+		}
+
 		log.Init(config.Log)
 	})
 
@@ -43,15 +46,15 @@ func init() {
 	pf.StringVar(&cfgFile, "config", "./config.yml", "config filepath")
 	pf.BoolVar(&config.Debug, "debug", false, "debugging mode")
 
-	err := pkgCfg.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))
+	err := pkgconfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))
 	if err != nil {
-		stdLog.Fatal(err)
+		stdlog.Fatal(err)
 	}
 }
 
 // Execute run commandline, exit with status 1 if there's an error.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		stdLog.Fatal(err)
+		stdlog.Fatal(err)
 	}
 }

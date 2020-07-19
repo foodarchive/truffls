@@ -18,15 +18,15 @@ import (
 	"github.com/foodarchive/truffls/internal/config"
 	"github.com/foodarchive/truffls/internal/server/handler"
 	"github.com/foodarchive/truffls/pkg/log"
-	pkgServer "github.com/foodarchive/truffls/pkg/server"
+	pkgserver "github.com/foodarchive/truffls/pkg/server"
 	"github.com/gin-gonic/gin"
 )
 
 // Start starts HTTP server.
 func Start() (err error) {
-	srv := pkgServer.New(
-		pkgServer.WithAddr(config.Server.Host, config.Server.Port),
-		pkgServer.WithHandler(router()),
+	srv := pkgserver.New(
+		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
+		pkgserver.WithHandler(router()),
 	)
 
 	return srv.Start()

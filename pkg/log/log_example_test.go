@@ -22,12 +22,20 @@ import (
 	"github.com/rs/zerolog"
 )
 
+type copyHook struct {
+}
+
+func (h copyHook) Run(e *log.Event, level log.Level, m string) {
+	e.Str("copy", m)
+}
+
 func setup() {
 	// Use static timestamp for testing.
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Date(2020, 7, 18, 21, 1, 05, 0, time.UTC)
 	}
 
+	// Use static caller returns for testing.
 	zerolog.CallerMarshalFunc = func(_ string, _ int) string {
 		return "/app/controller/root.go:113"
 	}
@@ -42,6 +50,14 @@ func Example() {
 	// {"level":"info","time":"2020-07-18T21:01:05Z","message":"hello world"}
 }
 
+func Example_withLevel() {
+	setup()
+	log.Init(log.Config{Level: "panic"})
+
+	log.Fatal().Msg("debugging message")
+	// Output:
+}
+
 func Example_stdLog() {
 	setup()
 	log.Init(log.Config{})
@@ -53,9 +69,29 @@ func Example_stdLog() {
 
 func Example_withCaller() {
 	setup()
-	log.Init(log.Config{Caller: true, Level: "debug"})
+	log.Init(log.Config{Caller: true})
 
-	log.Debug().Msg("something went wrong")
+	log.Error().Msg("something went wrong")
 	// Output:
-	// {"level":"debug","time":"2020-07-18T21:01:05Z","caller":"/app/controller/root.go:113","message":"something went wrong"}
+	// {"level":"error","time":"2020-07-18T21:01:05Z","caller":"/app/controller/root.go:113","message":"something went wrong"}
 }
+
+func ExampleDebug()  {
+	setup()
+	log.Init(log.Config{Level: "debug"})
+
+	log.Debug().Msg("debugging message")
+	// Output:
+	// {"level":"debug","time":"2020-07-18T21:01:05Z","message":"debugging message"}
+}
+
+func ExampleWithHook() {
+	setup()
+	log.Init(log.Config{})
+
+	lw := log.WithHook(copyHook{})
+	lw.Log().Msg("message")
+	// Output:
+	// {"time":"2020-07-18T21:01:05Z","copy":"message","message":"message"}
+}
+

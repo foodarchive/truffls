@@ -15,10 +15,8 @@
 package config
 
 import (
-	"log"
-
-	pkgConfig "github.com/foodarchive/truffls/pkg/config"
-	pkgLog "github.com/foodarchive/truffls/pkg/log"
+	pkgconfig "github.com/foodarchive/truffls/pkg/config"
+	pkglog "github.com/foodarchive/truffls/pkg/log"
 )
 
 type server struct {
@@ -30,7 +28,7 @@ type server struct {
 type config struct {
 	Debug  bool
 	Server server
-	Log    pkgLog.Config
+	Log    pkglog.Config
 }
 
 var (
@@ -45,19 +43,19 @@ var (
 	// Server configuration.
 	Server server
 	// Log configuration for logging package.
-	Log pkgLog.Config
+	Log pkglog.Config
 )
 
 // Load config file, return error when failed to load config file
 // or unmarshaling config struct.
-func Load(configFile string) {
-	if err := pkgConfig.Load(AppName, configFile); err != nil {
-		log.Fatal(err)
+func Load(configFile string) error {
+	if err := pkgconfig.Load(AppName, configFile); err != nil {
+		return err
 	}
 
 	var c config
-	if err := pkgConfig.Unmarshal(&c); err != nil {
-		log.Fatal(err)
+	if err := pkgconfig.Unmarshal(&c); err != nil {
+		return err
 	}
 
 	Debug = c.Debug
@@ -67,4 +65,6 @@ func Load(configFile string) {
 	if Debug {
 		Log.Level = "debug"
 	}
+
+	return nil
 }
