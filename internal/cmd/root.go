@@ -43,7 +43,7 @@ func init() {
 	})
 
 	pf := rootCmd.PersistentFlags()
-	pf.StringVar(&cfgFile, "config", "./config.yml", "config filepath")
+	pf.StringVar(&cfgFile, "config", "", "config filepath")
 	pf.BoolVar(&config.Debug, "debug", false, "debugging mode")
 
 	err := pkgconfig.BindFlags(pf.Lookup("config"), pf.Lookup("debug"))

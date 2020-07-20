@@ -17,6 +17,7 @@ package server
 import (
 	"net"
 	"net/http"
+	"time"
 )
 
 // Option is a function to configure Server.
@@ -61,5 +62,11 @@ func WithAutoTLS(host, cacheDir string) Option {
 	return func(s *Server) {
 		s.autoTLS.Host = host
 		s.autoTLS.CacheDir = cacheDir
+	}
+}
+
+func WithShutdownTimeout(timeout time.Duration) Option {
+	return func(s *Server) {
+		s.shutdownTimeout = timeout
 	}
 }

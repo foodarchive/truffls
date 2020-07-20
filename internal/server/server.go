@@ -23,13 +23,22 @@ import (
 )
 
 // Start starts HTTP server.
-func Start() (err error) {
+func Start() error {
 	srv := pkgserver.New(
 		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
 		pkgserver.WithHandler(router()),
+		pkgserver.WithCertFile(config.Server.TLS.CertFile, config.Server.TLS.KeyFile),
+		pkgserver.WithAutoTLS(config.Server.AutoTLS.Host, config.Server.AutoTLS.CacheDir),
 	)
 
-	return srv.Start()
+	switch {
+	case config.Server.TLS.Enabled:
+		return srv.StartTLS()
+	case config.Server.AutoTLS.Enabled:
+		return srv.StartAutoTLS()
+	default:
+		return srv.Start()
+	}
 }
 
 func router() *gin.Engine {

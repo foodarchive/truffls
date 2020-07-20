@@ -15,19 +15,25 @@
 package server
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/sync/errgroup"
 )
 
 // Server an HTTP(s) server.
 type Server struct {
-	server *http.Server
-	tls    struct {
+	server          *http.Server
+	shutdownTimeout time.Duration
+	tls             struct {
 		// TLS certificate, TLS.Key pair.
 		Cert []byte
 		// TLS private key, TLS.WithCert pair.
@@ -66,7 +72,7 @@ func New(opts ...Option) *Server {
 
 // Start stars HTTP server.
 func (s *Server) Start() error {
-	return s.listenAndServe()
+	return s.start()
 }
 
 // StartTLS starts HTTPS server.
@@ -98,7 +104,7 @@ func (s *Server) StartTLS() (err error) {
 	}
 
 	s.server.TLSConfig = cfg
-	return s.listenAndServe()
+	return s.start()
 }
 
 // StartAutoTLS starts an HTTPS server using certificates
@@ -114,12 +120,46 @@ func (s *Server) StartAutoTLS() error {
 	cfg.NextProtos = append(cfg.NextProtos, acme.ALPNProto)
 
 	s.server.TLSConfig = cfg
-	return s.listenAndServe()
+	return s.start()
+}
+
+func (s *Server) start() error {
+	idleConnsClosed := make(chan struct{})
+
+	var g errgroup.Group
+	g.Go(func() error {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
+		defer func() {
+			close(idleConnsClosed)
+			cancel()
+		}()
+		if err := s.server.Shutdown(ctx); err != nil {
+			return err
+		}
+		return nil
+	})
+	g.Go(func() error {
+		if err := s.listenAndServe(); err != nil && err != http.ErrServerClosed {
+			return err
+		}
+		return nil
+	})
+	g.Go(func() error {
+		select {
+		case <-idleConnsClosed:
+		}
+		return nil
+	})
+	return g.Wait()
 }
 
 func (s *Server) listenAndServe() error {
-	if s.server.TLSConfig == nil {
-		return s.server.ListenAndServe()
+	if s.server.TLSConfig != nil {
+		return s.server.ListenAndServeTLS("", "")
 	}
-	return s.server.ListenAndServeTLS("", "")
+	return s.server.ListenAndServe()
 }
