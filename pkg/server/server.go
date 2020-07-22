@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"golang.org/x/crypto/acme"
@@ -33,7 +34,8 @@ import (
 type Server struct {
 	server          *http.Server
 	shutdownTimeout time.Duration
-	tls             struct {
+
+	tls struct {
 		// TLS certificate, TLS.Key pair.
 		Cert []byte
 		// TLS private key, TLS.WithCert pair.
@@ -43,6 +45,7 @@ type Server struct {
 		// TLS private key file path, TLS.WithCertFile pair.
 		KeyFile string
 	}
+
 	autoTLS struct {
 		// Host allowed host for WithAutoTLS.
 		Host string
@@ -57,16 +60,22 @@ var (
 )
 
 // New creates a new Server.
-func New(opts ...Option) *Server {
+func New(handler http.Handler, opts ...Option) *Server {
 	s := &Server{
 		server: &http.Server{
-			Addr: ":5000",
+			Addr:         ":5000",
+			Handler:      handler,
+			ReadTimeout:  30 * time.Second,
+			WriteTimeout: 30 * time.Second,
+			IdleTimeout:  120 * time.Second,
 		},
+		shutdownTimeout: 10 * time.Second,
 	}
 
 	for _, opt := range opts {
 		opt.apply(s)
 	}
+
 	return s
 }
 
@@ -124,19 +133,14 @@ func (s *Server) StartAutoTLS() error {
 }
 
 func (s *Server) start() error {
-	idleConnsClosed := make(chan struct{})
-
 	var g errgroup.Group
 	g.Go(func() error {
 		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, os.Interrupt)
+		signal.Notify(sigint, syscall.SIGINT, syscall.SIGTERM)
 		<-sigint
 
 		ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
-		defer func() {
-			close(idleConnsClosed)
-			cancel()
-		}()
+		defer cancel()
 		if err := s.server.Shutdown(ctx); err != nil {
 			return err
 		}
@@ -145,12 +149,6 @@ func (s *Server) start() error {
 	g.Go(func() error {
 		if err := s.listenAndServe(); err != nil && err != http.ErrServerClosed {
 			return err
-		}
-		return nil
-	})
-	g.Go(func() error {
-		select {
-		case <-idleConnsClosed:
 		}
 		return nil
 	})

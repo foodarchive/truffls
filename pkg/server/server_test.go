@@ -27,8 +27,8 @@ import (
 
 func TestStart(t *testing.T) {
 	srv := server.New(
+		http.NewServeMux(),
 		server.WithAddr("", "0"),
-		server.WithHandler(http.NewServeMux()),
 	)
 	go func() {
 		assert.NoError(t, srv.Start())
@@ -93,7 +93,7 @@ func TestStartTLS(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			srv := server.New(
-				server.WithHandler(http.NewServeMux()),
+				http.NewServeMux(),
 				server.WithAddr("", "0"),
 				server.WithCertFile(tc.certFile, tc.keyFile),
 				server.WithCert(tc.cert, tc.key),
@@ -110,7 +110,7 @@ func TestStartTLS(t *testing.T) {
 
 func TestStartAutoTLS(t *testing.T) {
 	srv := server.New(
-		server.WithHandler(http.NewServeMux()),
+		http.NewServeMux(),
 		server.WithAddr("", "0"),
 		server.WithAutoTLS("", "./testdata"),
 	)

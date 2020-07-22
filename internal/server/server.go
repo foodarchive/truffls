@@ -25,8 +25,8 @@ import (
 // Start starts HTTP server.
 func Start() error {
 	srv := pkgserver.New(
+		router(),
 		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
-		pkgserver.WithHandler(router()),
 		pkgserver.WithCertFile(config.Server.TLS.CertFile, config.Server.TLS.KeyFile),
 		pkgserver.WithAutoTLS(config.Server.AutoTLS.Host, config.Server.AutoTLS.CacheDir),
 	)
