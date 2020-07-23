@@ -15,11 +15,12 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/foodarchive/truffls/internal/config"
 	"github.com/foodarchive/truffls/internal/server/handler"
-	"github.com/foodarchive/truffls/pkg/log"
 	pkgserver "github.com/foodarchive/truffls/pkg/server"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
 // Start starts HTTP server.
@@ -50,16 +51,10 @@ func Start() error {
 	return srv.Shutdown()
 }
 
-func router() *gin.Engine {
-	gin.SetMode(config.Server.GinMode)
-	gin.DefaultWriter = log.WithHook(log.NoLevelDebugHook{})
-	gin.DefaultErrorWriter = log.WithHook(log.NoLevelErrorHook{})
+func router() *mux.Router {
+	r := mux.NewRouter()
+	r.StrictSlash(true)
 
-	r := gin.New()
-	r.RemoveExtraSlash = true
-
-	r.Use(gin.Recovery())
-
-	r.GET("/", handler.Root)
+	r.Path("/").Methods(http.MethodGet).HandlerFunc(handler.Root)
 	return r
 }
