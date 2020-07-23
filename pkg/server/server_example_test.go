@@ -31,6 +31,12 @@ func ExampleServer_Start() {
 		server.WithAddr("", "9876"),
 	)
 
+	defer func() {
+		if err := srv.Shutdown(); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
 	go func() {
 		if err := srv.Start(); err != nil {
 			log.Fatal(err)
@@ -65,6 +71,12 @@ func ExampleServer_StartTLS() {
 			"./testdata/localhost.key",
 		),
 	)
+
+	defer func() {
+		if err := srv.Shutdown(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	go func() {
 		if err := srv.StartTLS(); err != nil {

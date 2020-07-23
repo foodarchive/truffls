@@ -41,6 +41,7 @@ type (
 )
 
 var (
+	// Log instance of zerolog.Logger.
 	Log Logger
 )
 
@@ -95,7 +96,7 @@ func Error() *Event {
 	return Log.Error()
 }
 
-// Info starts logging with fatal level.
+// Fatal starts logging with fatal level.
 // Note: under the hood it will call os.Exit(1).
 func Fatal() *Event {
 	return Log.Fatal()
