@@ -20,20 +20,18 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
+	"github.com/foodarchive/truffls/pkg/signal"
 	"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
-	"golang.org/x/sync/errgroup"
 )
 
 // Server an HTTP(s) server.
 type Server struct {
 	server          *http.Server
 	shutdownTimeout time.Duration
+	signalHandler   signal.Handler
 
 	tls struct {
 		// TLS certificate, TLS.Key pair.
@@ -76,12 +74,16 @@ func New(handler http.Handler, opts ...Option) *Server {
 		opt.apply(s)
 	}
 
+	if s.signalHandler == nil {
+		s.signalHandler = signal.NewHandler()
+	}
+
 	return s
 }
 
 // Start stars HTTP server.
 func (s *Server) Start() error {
-	return s.start()
+	return s.runAndWait()
 }
 
 // StartTLS starts HTTPS server.
@@ -113,7 +115,7 @@ func (s *Server) StartTLS() (err error) {
 	}
 
 	s.server.TLSConfig = cfg
-	return s.start()
+	return s.runAndWait()
 }
 
 // StartAutoTLS starts an HTTPS server using certificates
@@ -129,30 +131,46 @@ func (s *Server) StartAutoTLS() error {
 	cfg.NextProtos = append(cfg.NextProtos, acme.ALPNProto)
 
 	s.server.TLSConfig = cfg
-	return s.start()
+	return s.runAndWait()
 }
 
-func (s *Server) start() error {
-	var g errgroup.Group
-	g.Go(func() error {
-		sigint := make(chan os.Signal, 1)
-		signal.Notify(sigint, syscall.SIGINT, syscall.SIGTERM)
-		<-sigint
+// Stop stopping the signal handler.
+func (s *Server) Stop() {
+	s.signalHandler.Stop()
+}
 
-		ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
-		defer cancel()
-		if err := s.server.Shutdown(ctx); err != nil {
-			return err
+// Shutdown shutting down the HTTP(s) server.
+func (s *Server) Shutdown() error {
+	ctx, cancel := context.WithTimeout(context.Background(), s.shutdownTimeout)
+	defer cancel()
+	return s.server.Shutdown(ctx)
+}
+
+func (s *Server) runAndWait() error {
+	errc := make(chan error, 1)
+
+	// Wait for the termination signal.
+	go func() {
+		err := s.signalHandler.Loop()
+		select {
+		case errc <- err:
+		default:
 		}
-		return nil
-	})
-	g.Go(func() error {
-		if err := s.listenAndServe(); err != nil && err != http.ErrServerClosed {
-			return err
+	}()
+
+	// Listen and serve HTTP(s) server.
+	go func() {
+		err := s.listenAndServe()
+		if err == http.ErrServerClosed {
+			err = nil
 		}
-		return nil
-	})
-	return g.Wait()
+		select {
+		case errc <- err:
+		default:
+		}
+	}()
+
+	return <-errc
 }
 
 func (s *Server) listenAndServe() error {

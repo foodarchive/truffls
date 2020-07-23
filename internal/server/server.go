@@ -31,14 +31,23 @@ func Start() error {
 		pkgserver.WithAutoTLS(config.Server.AutoTLS.Host, config.Server.AutoTLS.CacheDir),
 	)
 
-	switch {
-	case config.Server.TLS.Enabled:
-		return srv.StartTLS()
-	case config.Server.AutoTLS.Enabled:
-		return srv.StartAutoTLS()
-	default:
-		return srv.Start()
+	var err error
+	{
+		switch {
+		case config.Server.TLS.Enabled:
+			err = srv.StartTLS()
+		case config.Server.AutoTLS.Enabled:
+			err = srv.StartAutoTLS()
+		default:
+			err = srv.Start()
+		}
+
+		if err != nil {
+			return err
+		}
 	}
+
+	return srv.Shutdown()
 }
 
 func router() *gin.Engine {
