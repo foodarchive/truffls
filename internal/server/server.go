@@ -15,33 +15,53 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/foodarchive/truffls/internal/config"
 	"github.com/foodarchive/truffls/internal/server/handler"
-	"github.com/foodarchive/truffls/pkg/log"
 	pkgserver "github.com/foodarchive/truffls/pkg/server"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 )
 
 // Start starts HTTP server.
-func Start() (err error) {
-	srv := pkgserver.New(
+func Start() error {
+	r := mux.NewRouter()
+	r.StrictSlash(true)
+
+	r.Path("/").Methods(http.MethodGet).HandlerFunc(handler.Root)
+
+	n := negroni.New()
+	recoveryMw := negroni.NewRecovery()
+	if config.Debug {
+		recoveryMw.PrintStack = true
+		recoveryMw.StackSize = 1 << 20
+	}
+
+	n.Use(recoveryMw)
+	n.UseHandler(r)
+
+	srv := pkgserver.New(n,
 		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
-		pkgserver.WithHandler(router()),
+		pkgserver.WithCertFile(config.Server.TLS.CertFile, config.Server.TLS.KeyFile),
+		pkgserver.WithAutoTLS(config.Server.AutoTLS.Host, config.Server.AutoTLS.CacheDir),
 	)
 
-	return srv.Start()
-}
+	var err error
+	{
+		switch {
+		case config.Server.TLS.Enabled:
+			err = srv.StartTLS()
+		case config.Server.AutoTLS.Enabled:
+			err = srv.StartAutoTLS()
+		default:
+			err = srv.Start()
+		}
 
-func router() *gin.Engine {
-	gin.SetMode(config.Server.GinMode)
-	gin.DefaultWriter = log.WithHook(log.NoLevelDebugHook{})
-	gin.DefaultErrorWriter = log.WithHook(log.NoLevelErrorHook{})
+		if err != nil {
+			return err
+		}
+	}
 
-	r := gin.New()
-	r.RemoveExtraSlash = true
-
-	r.Use(gin.Recovery())
-
-	r.GET("/", handler.Root)
-	return r
+	return srv.Shutdown()
 }

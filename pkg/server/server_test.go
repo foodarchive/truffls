@@ -27,14 +27,15 @@ import (
 
 func TestStart(t *testing.T) {
 	srv := server.New(
+		http.NewServeMux(),
 		server.WithAddr("", "0"),
-		server.WithHandler(http.NewServeMux()),
 	)
 	go func() {
 		assert.NoError(t, srv.Start())
 	}()
 
 	time.Sleep(10 * time.Millisecond)
+	srv.Stop()
 }
 
 func TestStartTLS(t *testing.T) {
@@ -93,7 +94,7 @@ func TestStartTLS(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			srv := server.New(
-				server.WithHandler(http.NewServeMux()),
+				http.NewServeMux(),
 				server.WithAddr("", "0"),
 				server.WithCertFile(tc.certFile, tc.keyFile),
 				server.WithCert(tc.cert, tc.key),
@@ -104,19 +105,29 @@ func TestStartTLS(t *testing.T) {
 			}()
 
 			time.Sleep(10 * time.Millisecond)
+			srv.Stop()
 		})
 	}
 }
 
 func TestStartAutoTLS(t *testing.T) {
 	srv := server.New(
-		server.WithHandler(http.NewServeMux()),
+		http.NewServeMux(),
 		server.WithAddr("", "0"),
 		server.WithAutoTLS("", "./testdata"),
+		server.WithConfig(server.Config{
+			ReadTimeout:       5 * time.Second,
+			WriteTimeout:      5 * time.Second,
+			IdleTimeout:       5 * time.Second,
+			ShutdownTimeout:   5 * time.Second,
+			ReadHeaderTimeout: 500 * time.Millisecond,
+			MaxHeaderBytes:    200,
+		}),
 	)
 	go func() {
 		assert.NoError(t, srv.StartAutoTLS())
 	}()
 
 	time.Sleep(10 * time.Millisecond)
+	srv.Stop()
 }

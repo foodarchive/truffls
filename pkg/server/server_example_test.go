@@ -27,9 +27,15 @@ import (
 
 func ExampleServer_Start() {
 	srv := server.New(
+		mux(),
 		server.WithAddr("", "9876"),
-		server.WithHandler(mux()),
 	)
+
+	defer func() {
+		if err := srv.Shutdown(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	go func() {
 		if err := srv.Start(); err != nil {
@@ -58,13 +64,19 @@ func ExampleServer_Start() {
 
 func ExampleServer_StartTLS() {
 	srv := server.New(
+		mux(),
 		server.WithAddr("", "8765"),
-		server.WithHandler(mux()),
 		server.WithCertFile(
 			"./testdata/localhost.crt",
 			"./testdata/localhost.key",
 		),
 	)
+
+	defer func() {
+		if err := srv.Shutdown(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	go func() {
 		if err := srv.StartTLS(); err != nil {

@@ -15,14 +15,29 @@
 package config
 
 import (
+	"time"
+
 	pkgconfig "github.com/foodarchive/truffls/pkg/config"
 	pkglog "github.com/foodarchive/truffls/pkg/log"
 )
 
 type server struct {
-	Host    string
-	Port    string
-	GinMode string
+	Host            string
+	Port            string
+	GinMode         string
+	ShutdownTimeout time.Duration
+
+	TLS struct {
+		Enabled  bool
+		CertFile string
+		KeyFile  string
+	}
+
+	AutoTLS struct {
+		Enabled  bool
+		Host     string
+		CacheDir string
+	}
 }
 
 type config struct {

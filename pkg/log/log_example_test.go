@@ -76,7 +76,7 @@ func Example_withCaller() {
 	// {"level":"error","time":"2020-07-18T21:01:05Z","caller":"/app/controller/root.go:113","message":"something went wrong"}
 }
 
-func ExampleDebug()  {
+func ExampleDebug() {
 	setup()
 	log.Init(log.Config{Level: "debug"})
 
@@ -94,4 +94,3 @@ func ExampleWithHook() {
 	// Output:
 	// {"time":"2020-07-18T21:01:05Z","copy":"message","message":"message"}
 }
-

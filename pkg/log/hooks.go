@@ -21,6 +21,7 @@ import (
 // NoLevelWarnHook replace no level with warn log level.
 type NoLevelWarnHook struct{}
 
+// Run add warn level to the log message when log level not provided.
 func (h NoLevelWarnHook) Run(e *Event, level Level, _ string) {
 	if level == zerolog.NoLevel {
 		e.Str(zerolog.LevelFieldName, zerolog.WarnLevel.String())
@@ -30,6 +31,7 @@ func (h NoLevelWarnHook) Run(e *Event, level Level, _ string) {
 // NoLevelDebugHook replace no level with warn log level.
 type NoLevelDebugHook struct{}
 
+// Run add debug level to the log message when log level not provided.
 func (h NoLevelDebugHook) Run(e *Event, level Level, _ string) {
 	if level == zerolog.NoLevel {
 		e.Str(zerolog.LevelFieldName, zerolog.DebugLevel.String())
@@ -39,6 +41,7 @@ func (h NoLevelDebugHook) Run(e *Event, level Level, _ string) {
 // NoLevelErrorHook replace no level with warn log level.
 type NoLevelErrorHook struct{}
 
+// Run add error level to the log message when log level not provided.
 func (h NoLevelErrorHook) Run(e *Event, level Level, _ string) {
 	if level == zerolog.NoLevel {
 		e.Str(zerolog.LevelFieldName, zerolog.ErrorLevel.String())

@@ -1,0 +1,9 @@
+./pkg/signal/signal.go is a copy of
+    https://github.com/weaveworks/common/blob/master/signals/signals.go
+
+With cosmetic modification
+
+Weaveworks notice:
+Weave
+Copyright 2016 Weaveworks Ltd.
+This product includes software developed at Weaveworks Ltd.

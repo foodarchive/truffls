@@ -16,11 +16,9 @@ package handler
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 // Root handler for home endpoint.
-func Root(c *gin.Context) {
-	c.Status(http.StatusOK)
+func Root(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }

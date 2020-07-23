@@ -16,7 +16,6 @@ package server
 
 import (
 	"net"
-	"net/http"
 )
 
 // Option is a function to configure Server.
@@ -33,10 +32,15 @@ func WithAddr(host, port string) Option {
 	}
 }
 
-// WithHandler assign server http handler.
-func WithHandler(handler http.Handler) Option {
+// WithConfig sets http server configuration.
+func WithConfig(config Config) Option {
 	return func(s *Server) {
-		s.server.Handler = handler
+		s.server.ReadTimeout = config.ReadTimeout
+		s.server.ReadHeaderTimeout = config.ReadHeaderTimeout
+		s.server.WriteTimeout = config.WriteTimeout
+		s.server.IdleTimeout = config.IdleTimeout
+		s.server.MaxHeaderBytes = config.MaxHeaderBytes
+		s.shutdownTimeout = config.ShutdownTimeout
 	}
 }
 
