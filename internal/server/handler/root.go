@@ -19,6 +19,6 @@ import (
 )
 
 // Root handler for home endpoint.
-func Root(w http.ResponseWriter, _ *http.Request)  {
+func Root(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }

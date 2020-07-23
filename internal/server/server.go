@@ -21,12 +21,27 @@ import (
 	"github.com/foodarchive/truffls/internal/server/handler"
 	pkgserver "github.com/foodarchive/truffls/pkg/server"
 	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 )
 
 // Start starts HTTP server.
 func Start() error {
-	srv := pkgserver.New(
-		router(),
+	r := mux.NewRouter()
+	r.StrictSlash(true)
+
+	r.Path("/").Methods(http.MethodGet).HandlerFunc(handler.Root)
+
+	n := negroni.New()
+	recoveryMw := negroni.NewRecovery()
+	if config.Debug {
+		recoveryMw.PrintStack = true
+		recoveryMw.StackSize = 1 << 20
+	}
+
+	n.Use(recoveryMw)
+	n.UseHandler(r)
+
+	srv := pkgserver.New(n,
 		pkgserver.WithAddr(config.Server.Host, config.Server.Port),
 		pkgserver.WithCertFile(config.Server.TLS.CertFile, config.Server.TLS.KeyFile),
 		pkgserver.WithAutoTLS(config.Server.AutoTLS.Host, config.Server.AutoTLS.CacheDir),
@@ -49,12 +64,4 @@ func Start() error {
 	}
 
 	return srv.Shutdown()
-}
-
-func router() *mux.Router {
-	r := mux.NewRouter()
-	r.StrictSlash(true)
-
-	r.Path("/").Methods(http.MethodGet).HandlerFunc(handler.Root)
-	return r
 }
